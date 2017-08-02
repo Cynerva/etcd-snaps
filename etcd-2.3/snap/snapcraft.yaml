@@ -7,6 +7,8 @@ description: |
   as a store of small but important data in distributed systems.
 confinement: strict
 grade: stable
+architectures:
+  - s390x
 
 apps:
   etcd:
@@ -22,11 +24,23 @@ apps:
 parts:
   etcd:
     plugin: dump
-    source: https://github.com/coreos/etcd/releases/download/v2.3.8/etcd-v2.3.8-linux-amd64.tar.gz
-    install: |
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp etcd $SNAPCRAFT_PART_INSTALL/bin/
-      cp etcdctl $SNAPCRAFT_PART_INSTALL/bin/
+    source: .
+    prepare: |
+      set -eux
+
+      # This scriptlet assumes that a reasonable version of golang is
+      # installed.
+      go version
+      git clone https://github.com/coreos/etcd.git --branch v2.3.8 --depth 1
+      (cd etcd
+        export GOOS=linux
+        export GOARCH=s390x
+        ./build
+      )
+      mkdir -p bin
+      mv etcd/bin/etcd bin
+      mv etcd/bin/etcdctl bin
+      rm -rf etcd
     stage:
       - bin/etcd
       - bin/etcdctl
