@@ -51,5 +51,8 @@ ETCD_DATA_DIR="${ETCD_DATA_DIR:=$TARGET_DATA_DIR}"
 export ETCD_NAME
 export ETCD_DATA_DIR
 
+# s390x support
+export ETCD_UNSUPPORTED_ARCH=s390x
+
 exec $SNAP/bin/etcd "$@"
 
